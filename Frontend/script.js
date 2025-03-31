@@ -1,13 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Adding event listeners to feature boxes
     document.querySelectorAll(".feature-box").forEach(box => {
         box.addEventListener("click", async function () {
-            const feature = this.getAttribute("data-feature"); // Get feature type
-            const promptNumber = getFeatureNumber(feature); // Get predefined number
-            const responseText = await fetchAIResponse(promptNumber); // Fetch AI response
-            showPopup(responseText); // Display in modal
+            const feature = this.getAttribute("data-feature");
+            const promptNumber = getFeatureNumber(feature);
+            showLoadingPopup(); // Show loading while fetching data
+            const responseText = await fetchAIResponse(promptNumber);
+            hideLoadingPopup(); // Hide loading spinner
+            showPopup(responseText);
         });
     });
 
+    // Mapping features to their respective prompt numbers
     function getFeatureNumber(feature) {
         const promptNumbers = {
             "data-analysis": 1,
@@ -16,29 +20,57 @@ document.addEventListener("DOMContentLoaded", function () {
             "investment": 4,
             "chatbot": 5
         };
-        return promptNumbers[feature] || 0; // Default to 0 if feature is not found
+        return promptNumbers[feature] || 0;
     }
 
+    // Fetching the AI response from the API
     async function fetchAIResponse(promptNumber) {
         try {
-            const response = await fetch("/api/process-prompt", {
+            const response = await fetch("http://127.0.0.1:5000/api/process-prompt", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt_number: promptNumber })
             });
             const data = await response.json();
-            return data.response || "No response received.";
+            return data.response || "No response received.";  // Handle empty response
         } catch (error) {
             console.error("Error fetching AI response:", error);
-            return "Error processing request.";
+            return "Error processing request."; // Show error message on failure
         }
     }
 
+    // Displaying a popup with the AI response text
     function showPopup(text) {
+        // Remove any existing popups before creating a new one
+        document.querySelectorAll(".popup").forEach(popup => popup.remove());
+
         const popup = document.createElement("div");
         popup.classList.add("popup");
-        popup.innerHTML = `<div class="popup-content"><p>${text}</p><button onclick="this.parentElement.parentElement.remove()">Close</button></div>`;
+        popup.innerHTML = `
+            <div class="popup-content">
+                <p>${text}</p>
+                <button onclick="this.closest('.popup').remove()">Close</button>
+            </div>
+        `;
         document.body.appendChild(popup);
+    }
+
+    // Show loading popup
+    function showLoadingPopup() {
+        const loadingPopup = document.createElement("div");
+        loadingPopup.classList.add("popup", "loading");
+        loadingPopup.innerHTML = `
+            <div class="popup-content">
+                <p>Loading...</p>
+            </div>
+        `;
+        document.body.appendChild(loadingPopup);
+    }
+
+    // Hide loading popup
+    function hideLoadingPopup() {
+        const loadingPopups = document.querySelectorAll(".popup.loading");
+        loadingPopups.forEach(popup => popup.remove());
     }
 });
 
