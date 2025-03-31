@@ -4,5 +4,5 @@ import openpyxl
 
 from langchain_together import Together
 
-df = pd.read_excel("AdaniGreen.xlsx", engine="openpyxl")
+df = pd.read_csv("AdaniGreen.csv")
 print(df.head())  
