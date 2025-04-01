@@ -1,46 +1,48 @@
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".feature-box").forEach(box => {
-        box.addEventListener("click", async function () {
-            const feature = this.getAttribute("data-feature"); // Get feature type
-            const promptNumber = getFeatureNumber(feature); // Get predefined number
-            const responseText = await fetchAIResponse(promptNumber); // Fetch AI response
-            showPopup(responseText); // Display in modal
+    document.querySelectorAll(".tool-card").forEach(box => {
+        box.addEventListener("click", function () {
+            const feature = this.getAttribute("onclick").split("'")[1]; // Extract the feature type from the onclick attribute
+            handleToolClick(feature);  // Call the function
         });
     });
-
-    function getFeatureNumber(feature) {
-        const promptNumbers = {
-            "data-analysis": 1,
-            "budgeting": 2,
-            "expense-management": 3,
-            "investment": 4,
-            "chatbot": 5
-        };
-        return promptNumbers[feature] || 0; // Default to 0 if feature is not found
-    }
-
-    async function fetchAIResponse(promptNumber) {
-        try {
-            const response = await fetch("/api/process-prompt", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt_number: promptNumber })
-            });
-            const data = await response.json();
-            return data.response || "No response received.";
-        } catch (error) {
-            console.error("Error fetching AI response:", error);
-            return "Error processing request.";
-        }
-    }
-
-    function showPopup(text) {
-        const popup = document.createElement("div");
-        popup.classList.add("popup");
-        popup.innerHTML = `<div class="popup-content"><p>${text}</p><button onclick="this.parentElement.parentElement.remove()">Close</button></div>`;
-        document.body.appendChild(popup);
-    }
 });
+
+// Define the handleToolClick function
+function handleToolClick(feature) {
+    const sampleText = getSampleText(feature);
+    showPopup(sampleText);  // Display the sample text in the popup
+}
+
+// Function to generate sample text based on the feature clicked
+function getSampleText(feature) {
+    switch (feature) {
+        case 'dataAnalysis':
+            return "You have selected Data Analysis & Forecasting. Here you can analyze trends and predict future performance.";
+        case 'budgeting':
+            return "You have selected Budgeting. Plan and manage your company's budget efficiently here.";
+        case 'expenseManagement':
+            return "You have selected Expense Management. Track and optimize your company's expenses here.";
+        case 'investment':
+            return "You have selected Investment. Find the best investment strategies for growth here.";
+        case 'chatbot':
+            return "You have selected the Chatbot. Interact with the AI-powered chatbot for business insights.";
+        default:
+            return "No feature selected. Please select a valid option.";
+    }
+}
+
+// Function to show a popup with the provided text
+function showPopup(text) {
+    const popup = document.createElement("div");
+    popup.classList.add("popup");
+    popup.innerHTML = `
+        <div class="popup-content">
+            <p>${text}</p>
+            <button onclick="this.parentElement.parentElement.remove()">Close</button>
+        </div>`;
+    document.body.appendChild(popup);
+}
+
 
 async function fetchStockCSV() {
     try {
