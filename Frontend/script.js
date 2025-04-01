@@ -33,6 +33,9 @@ function getSampleText(feature) {
 
 // Function to show a popup with the provided text
 function showPopup(text) {
+    // Remove existing popups before adding a new one
+    document.querySelectorAll(".popup").forEach(popup => popup.remove());
+
     const popup = document.createElement("div");
     popup.classList.add("popup");
     popup.innerHTML = `
@@ -40,9 +43,9 @@ function showPopup(text) {
             <p>${text}</p>
             <button onclick="this.parentElement.parentElement.remove()">Close</button>
         </div>`;
+    
     document.body.appendChild(popup);
 }
-
 
 async function fetchStockCSV() {
     try {
