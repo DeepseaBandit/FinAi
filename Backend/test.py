@@ -56,11 +56,11 @@ def get_analysis():
             
         # Generate different prompts based on the requested feature
         if feature == 'dataAnalysis':
-            prompt = f"""Analyze the financial data provided and generate a detailed analysis, focusing on trends, patterns, and key financial insights without explicitly describing the given values. Additionally, forecast 'Your Company's' future financial performance by identifying trends, patterns, and key indicators to predict potential growth, profitability, and market position. Consider historical performance, industry benchmarks, and economic factors while making data-driven projections. Conclude with a concise evaluation of 'Your Company's' financial health and expected trajectory, replacing 'the company' with 'Your Company' in the summary. Ensure the analysis is insightful, forward-looking, and based on clear data-driven reasoning. Write in 150 words:  {article_text}"""
+            prompt = f"""Analyze the financial data provided and generate a detailed analysis, focusing on trends, patterns, and key financial insights without explicitly describing the given values. Additionally, forecast 'Your Company's' future financial performance by identifying trends, patterns, and key indicators to predict potential growth, profitability, and market position. Consider historical performance, industry benchmarks, and economic factors while making data-driven projections. Conclude with a concise evaluation of 'Your Company's' financial health and expected trajectory, replacing 'the company' with 'Your Company' in the summary. Ensure the analysis is insightful, forward-looking, and based on clear data-driven reasoning. :  {article_text}"""
         elif feature == 'budgeting':
-            prompt = f"""Analyze the financial data provided and generate a detailed budgeting report for 'Your Company.' Identify key revenue streams, fixed and variable costs, operational expenses, and profitability margins. Assess cash flow trends, cost efficiency, and potential areas for financial optimization. Provide a breakdown of expected expenditures, investment allocations, and projected savings. Conclude with a concise evaluation of 'Your Company's' financial planning, ensuring sustainable growth and stability. Replace 'the company' with 'Your Company' in the summary. Use data-driven insights and industry benchmarks to support the analysis. Write in 150 words: {article_text}"""
+            prompt = f"""Analyze the financial data provided and generate a detailed budgeting report for 'Your Company.' Identify key revenue streams, fixed and variable costs, operational expenses, and profitability margins. Assess cash flow trends, cost efficiency, and potential areas for financial optimization. Provide a breakdown of expected expenditures, investment allocations, and projected savings. Conclude with a concise evaluation of 'Your Company's' financial planning, ensuring sustainable growth and stability. Replace 'the company' with 'Your Company' in the summary. Use data-driven insights and industry benchmarks to support the analysis.: {article_text}"""
         elif feature == 'expenseManagement':
-            prompt = f"""Analyze the financial data provided and generate a detailed expense management report for 'Your Company.' Identify key fixed and variable costs, operational expenses, and cash flow trends. Assess cost efficiency, highlight areas of excessive spending, and suggest strategies for optimization. Provide insights into budgeting, cost-cutting opportunities, and resource allocation to enhance profitability. Conclude with a concise evaluation of 'Your Company's' expense management strategy, ensuring financial stability and long-term sustainability. Replace 'the company' with 'Your Company' in the summary. Use data-driven insights and industry benchmarks to support the analysis. Write in 150 words: {article_text}"""
+            prompt = f"""Analyze the financial data provided and generate a detailed expense management report for 'Your Company.' Identify key fixed and variable costs, operational expenses, and cash flow trends. Assess cost efficiency, highlight areas of excessive spending, and suggest strategies for optimization. Provide insights into budgeting, cost-cutting opportunities, and resource allocation to enhance profitability. Conclude with a concise evaluation of 'Your Company's' expense management strategy, ensuring financial stability and long-term sustainability. Replace 'the company' with 'Your Company' in the summary. Use data-driven insights and industry benchmarks to support the analysis.: {article_text}"""
         elif feature == 'investment':
             prompt = f"""Based on the financial data provided, recommend investment strategies for 'Your Company'. Suggest potential areas for capital allocation, growth opportunities, and risk management considerations. Include both short-term and long-term investment perspectives in your recommendations. Write in a clear, professional manner with actionable advice in about 150 words:  {article_text}"""
         else:
@@ -98,13 +98,12 @@ def chatbot():
         
         # Prepare the system prompt
         system_prompt = """You are a financial AI assistant for a company dashboard. Provide:
-        1. Brief, professional responses (2-3 sentences)
-        2. Focus on practical financial advice
-        3. Only provide financial summaries when explicitly asked
-        4. For greetings, keep it simple
-        5. Ask clarifying questions if the request is vague
-        6. Do not give the analysis which are already asked for.
-        7. Do not give the values from the csv file in this response."""
+        1. Focus on practical financial advice
+        2. Only provide financial summaries when explicitly asked
+        3. For greetings, keep it simple
+        4. Ask clarifying questions if the request is vague
+        5. Do not give the analysis which are already asked for.
+        6. Do not give the values from the csv file in this response."""
         
         if financial_context:
             system_prompt += f"\n\nContext: {financial_context}"
