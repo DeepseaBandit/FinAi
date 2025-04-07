@@ -21,56 +21,28 @@
         /* Add 3D background canvas */
         #background-canvas {
             position: fixed;
+            display: flex;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
             z-index: -1;
             opacity: 0.5;
         }
         
         /* Dark mode overrides - minimal changes to preserve existing sizing */
-        body {
-            background-color: #0a1929;
-            color: #e6e6e6;
-            position: relative;
-        }
+        
         
         /* Keep original sizing, just update colors */
-        header {
-            background-color: rgba(13, 28, 45, 0.9);
-            border-bottom: 1px solid rgba(59, 89, 152, 0.3);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        section, .sec, .tool-card {
-            background-color: rgba(22, 36, 51, 0.85);
-            border: 1px solid rgba(59, 89, 152, 0.3);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-            /* Keep original padding/margin intact */
-        }
         
         /* Subtle hover effect that doesn't change size */
-        section:hover, .sec:hover, .tool-card:hover {
+        /*section:hover, .sec:hover, .tool-card:hover {
             background-color: rgba(30, 45, 65, 0.9);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
         
         /* Table styles for dark mode - structure preserved */
-        .financial-table th {
-            color: #ffffff; /* Changed from #4b79a1 to white */
-        }
-        
-        .financial-table td, .financial-table th {
-            border-bottom: 1px solid rgba(59, 89, 152, 0.3);
-        }
-        
         /* Important: keep all width, height, grid, and flex settings from the original CSS */
         /* This style just adds the dark theme on top without modifying layout */
         
-        h1, h2, h3, h4, h5, h6 {
-            color: #e6e6e6;
-        }
         
         /* Keep original Chart.js canvas styles, just update colors in JS */
     </style>
@@ -82,7 +54,6 @@
     <header>
         <div class="logo-container">
             <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="FinAI Logo" class="logo" />
-            <h1>FinAI</h1>
         </div>
     </header>    
     
