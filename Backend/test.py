@@ -16,7 +16,7 @@ def chat_with_ai(user_input, financial_context=""):
     
     system_prompt = """You are a financial AI assistant for a company dashboard. You provide helpful, 
     concise advice on financial matters, budgeting, expense management, investments, and business strategy.
-    Keep responses brief and focused on practical advice. Use professional but conversational language."""
+    Keep responses brief (2-3 sentences) and focused on practical advice. Use professional but conversational language."""
     
     if financial_context:
         system_prompt += f"\n\nCurrent financial context: {financial_context}"
@@ -98,8 +98,8 @@ def chatbot():
         
         # Prepare the system prompt
         system_prompt = """You are a financial AI assistant for a company dashboard. Provide:
-        1. Brief, professional responses
-        2. Should give proper advice when asked about it
+        1. Brief, professional responses (2-3 sentences)
+        2. Focus on practical financial advice
         3. Only provide financial summaries when explicitly asked
         4. For greetings, keep it simple
         5. Ask clarifying questions if the request is vague
