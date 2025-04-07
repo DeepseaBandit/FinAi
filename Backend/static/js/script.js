@@ -136,8 +136,16 @@ function getFeatureTitle(feature) {
 }
 
 // Update the handleToolClick function to fetch AI analysis
+// In script.js - Update the handleToolClick function
+
 async function handleToolClick(feature) {
-    // Show loading dialog
+    // Special case for chatbot - show chatbot dialog instead of analysis
+    if (feature === 'chatbot') {
+        showChatbotDialog();
+        return;
+    }
+    
+    // Show loading dialog for other tools
     const dialog = showDialog(feature, "", true);
     
     try {
@@ -165,6 +173,171 @@ async function handleToolClick(feature) {
     }
 }
 
+function showChatbotDialog() {
+    // Remove existing dialogs before adding a new one
+    document.querySelectorAll(".dialog-overlay").forEach(dialog => dialog.remove());
+    
+    // Create dialog elements
+    const overlay = document.createElement("div");
+    overlay.classList.add("dialog-overlay");
+    
+    // Create chatbot HTML structure
+    overlay.innerHTML = `
+        <div class="dialog-window chatbot-dialog">
+            <div class="dialog-header">
+                <h3>AI Chatbot Assistant</h3>
+                <button class="dialog-close-btn" id="dialogCloseBtn">&times;</button>
+            </div>
+            <div class="dialog-content chatbot-content" id="dialogContent">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message bot">
+                        <div class="message-content">
+                            Hello! I'm your FinAI assistant. How can I help you with financial analysis today?
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your message here..." />
+                    <button id="sendMessageBtn">Send</button>
+                </div>
+                <div class="chat-suggestions">
+                    <div class="suggestion-chip" data-question="What is the current financial performance?">Current financial performance</div>
+                    <div class="suggestion-chip" data-question="How can I improve cash flow?">Improve cash flow</div>
+                    <div class="suggestion-chip" data-question="What investment strategies do you recommend?">Investment strategies</div>
+                    <div class="suggestion-chip" data-question="How to reduce expenses?">Reduce expenses</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Set up event listeners
+    const closeDialog = () => overlay.remove();
+    
+    document.getElementById("dialogCloseBtn").addEventListener("click", closeDialog);
+    
+    // Close dialog when clicking on the overlay
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            closeDialog();
+        }
+    });
+    
+    // Close dialog with ESC key
+    document.addEventListener("keydown", function escHandler(e) {
+        if (e.key === "Escape") {
+            closeDialog();
+            document.removeEventListener("keydown", escHandler);
+        }
+    });
+    
+    // Set up chatbot interaction
+    setupChatbotInteraction();
+}
+
+// Function to handle chatbot interaction
+// Function to handle chatbot interaction
+function setupChatbotInteraction() {
+    const chatInput = document.getElementById("chatInput");
+    const sendMessageBtn = document.getElementById("sendMessageBtn");
+    const chatMessages = document.getElementById("chatMessages");
+    
+    // Function to add a message to the chat
+    function addMessage(message, isUser) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("chat-message", isUser ? "user" : "bot");
+        
+        const messageContent = document.createElement("div");
+        messageContent.classList.add("message-content");
+        messageContent.textContent = message; // Just show the message without "User:" or "Assistant:" prefixes
+        
+        messageDiv.appendChild(messageContent);
+        chatMessages.appendChild(messageDiv);
+        
+        // Scroll to the bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to show typing indicator
+    function showTypingIndicator() {
+        const typingDiv = document.createElement("div");
+        typingDiv.classList.add("chat-message", "bot", "typing-indicator");
+        typingDiv.innerHTML = `<div class="message-content"><span>•</span><span>•</span><span>•</span></div>`;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to remove typing indicator
+    function removeTypingIndicator() {
+        const indicator = document.querySelector(".typing-indicator");
+        if (indicator) {
+            chatMessages.removeChild(indicator);
+        }
+    }
+    
+    // Function to send message
+    async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        
+        // Add user message
+        addMessage(message, true);
+        
+        // Clear input
+        chatInput.value = "";
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        try {
+            // Call the API
+            const response = await fetch('/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message }),
+            });
+            
+            const data = await response.json();
+            
+            // Remove typing indicator
+            removeTypingIndicator();
+            
+            // Clean the response to remove any "Assistant:" prefix
+            let cleanedResponse = data.response;
+            if (cleanedResponse.startsWith("Assistant:")) {
+                cleanedResponse = cleanedResponse.substring("Assistant:".length).trim();
+            }
+            
+            // Add bot response
+            addMessage(cleanedResponse, false);
+        } catch (error) {
+            console.error("Chat error:", error);
+            removeTypingIndicator();
+            addMessage("Sorry, I encountered an error. Please try again.", false);
+        }
+    }
+    
+    // Event listeners
+    sendMessageBtn.addEventListener("click", sendMessage);
+    
+    chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
+    });
+    
+    // Set up suggestion chips
+    document.querySelectorAll(".suggestion-chip").forEach(chip => {
+        chip.addEventListener("click", function() {
+            const question = this.getAttribute("data-question");
+            chatInput.value = question;
+            sendMessage();
+        });
+    });
+}
 // Function to generate sample text based on the feature clicked (fallback if API fails)
 function getSampleText(feature) {
     switch (feature) {
