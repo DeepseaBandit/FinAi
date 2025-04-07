@@ -103,7 +103,8 @@ def chatbot():
         3. For greetings, keep it simple
         4. Ask clarifying questions if the request is vague
         5. Do not give the analysis which are already asked for.
-        6. Do not give the values from the csv file in this response."""
+        6. Do not give the values from the csv file in this response.
+        7. Give the answer with Markdowns"""
         
         if financial_context:
             system_prompt += f"\n\nContext: {financial_context}"
