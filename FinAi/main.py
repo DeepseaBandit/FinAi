@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import pandas as pd
 import requests
+from langchain_together import Together
 
 app = Flask(__name__)
 
@@ -8,35 +9,20 @@ app = Flask(__name__)
 TOGETHER_API_KEY = "tgp_v1_49vWGNGcLixzfeMiS8GQNCKg5MH4Wo0sprjba0xhjjE"
 API_URL = "https://api.together.xyz/v1/chat/completions"
 
-def chat_with_ai(user_input, financial_context=""):
-    headers = {
-        "Authorization": f"Bearer {TOGETHER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    
-    system_prompt = """You are a financial AI assistant for a company dashboard. You provide helpful, 
-    concise advice on financial matters, budgeting, expense management, investments, and business strategy.
-    Keep responses brief (2-3 sentences) and focused on practical advice. Use professional but conversational language."""
-    
-    if financial_context:
-        system_prompt += f"\n\nCurrent financial context: {financial_context}"
-    
-    payload = {
-        "model": "mistralai/Mistral-7B-Instruct-v0.2",
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_input}
-        ],
-        "temperature": 0.7,
-        "max_tokens": 200
-    }
-    
-    response = requests.post(API_URL, json=payload, headers=headers)
-    
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"]
-    else:
-        return f"Error: I'm having trouble processing your request. (API Error: {response.status_code})"
+# Initialize the Together AI model
+def initialize_llm():
+   return Together(
+        model="mistralai/Mistral-7B-Instruct-v0.2",
+        together_api_key="tgp_v1_49vWGNGcLixzfeMiS8GQNCKg5MH4Wo0sprjba0xhjjE",
+        max_tokens=30000
+    )
+
+# Function to clean the output from Together AI
+def get_cleaned_output(prompt, llm):
+    result = llm.invoke(prompt)
+    # Split by lines, remove the first 2 lines, and join the rest
+    cleaned_result = "\n".join(result.splitlines()[3:])
+    return cleaned_result
 
 @app.route("/")
 def hello_world():
@@ -54,6 +40,9 @@ def get_analysis():
         except FileNotFoundError:
             article_text = "Sample financial data for demonstration"
             
+        llm = initialize_llm()
+
+
         # Generate different prompts based on the requested feature
         if feature == 'dataAnalysis':
             prompt = f"""Analyze the financial data provided and generate a detailed analysis, focusing on trends, patterns, and key financial insights without explicitly describing the given values. Additionally, forecast 'Your Company's' future financial performance by identifying trends, patterns, and key indicators to predict potential growth, profitability, and market position. Consider historical performance, industry benchmarks, and economic factors while making data-driven projections. Conclude with a concise evaluation of 'Your Company's' financial health and expected trajectory, replacing 'the company' with 'Your Company' in the summary. Ensure the analysis is insightful, forward-looking, and based on clear data-driven reasoning. :  {article_text}"""
@@ -66,7 +55,7 @@ def get_analysis():
         else:
             prompt = f"""Based on the financial data provided, give a general analysis of 'Your Company's' financial position and offer relevant recommendations. Write in a professional but approachable manner in about 150 words:  {article_text}"""
 
-        result = chat_with_ai(prompt)
+        result = get_cleaned_output(prompt, llm)
         return jsonify({"success": True, "result": result})
     
     except Exception as e:
