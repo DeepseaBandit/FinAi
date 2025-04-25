@@ -6,14 +6,14 @@ from langchain_together import Together
 app = Flask(__name__)
 
 # Together AI API configuration
-TOGETHER_API_KEY = "tgp_v1_49vWGNGcLixzfeMiS8GQNCKg5MH4Wo0sprjba0xhjjE"
+TOGETHER_API_KEY = ""
 API_URL = "https://api.together.xyz/v1/chat/completions"
 
 # Initialize the Together AI model
 def initialize_llm():
    return Together(
         model="mistralai/Mistral-7B-Instruct-v0.2",
-        together_api_key="tgp_v1_49vWGNGcLixzfeMiS8GQNCKg5MH4Wo0sprjba0xhjjE",
+        together_api_key="",
         max_tokens=30000
     )
 
